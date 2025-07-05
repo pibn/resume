@@ -1,0 +1,295 @@
+import React, { useState, useRef, useCallback } from 'react';
+import { ChevronLeft } from 'lucide-react';
+
+const PortfolioWindow: React.FC = () => {
+  const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [sliderPosition, setSliderPosition] = useState(50);
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  const projects = [
+    {
+      id: 1,
+      title: "E-commerce Platform Redesign",
+      description: "Complete overhaul of shopping experience with focus on conversion optimization and user engagement",
+      year: "2024",
+      category: "Web Design",
+      client: "TechCorp",
+      duration: "3 months",
+      image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800",
+      beforeImage: "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=800",
+      afterImage: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800",
+      hasSlider: true
+    },
+    {
+      id: 2,
+      title: "Mobile Banking Application",
+      description: "Intuitive financial management interface designed for mobile-first users with enhanced security",
+      year: "2024",
+      category: "Mobile Design",
+      client: "FinanceApp",
+      duration: "4 months",
+      image: "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800",
+      beforeImage: "https://images.pexels.com/photos/590016/pexels-photo-590016.jpg?auto=compress&cs=tinysrgb&w=800",
+      afterImage: "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800",
+      hasSlider: true
+    },
+    {
+      id: 3,
+      title: "Analytics Dashboard",
+      description: "Data visualization and reporting system for enterprise clients with real-time insights",
+      year: "2023",
+      category: "Dashboard",
+      client: "DataCorp",
+      duration: "2 months",
+      image: "https://images.pexels.com/photos/590022/pexels-photo-590022.jpg?auto=compress&cs=tinysrgb&w=800",
+      hasSlider: false
+    },
+    {
+      id: 4,
+      title: "Brand Identity System",
+      description: "Complete visual identity redesign including logo, colors, typography, and brand guidelines",
+      year: "2023",
+      category: "Branding",
+      client: "StartupXYZ",
+      duration: "6 weeks",
+      image: "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=800",
+      hasSlider: false
+    },
+    {
+      id: 5,
+      title: "SaaS Platform Interface",
+      description: "User interface design for B2B software platform with focus on productivity and workflow",
+      year: "2022",
+      category: "Web Design",
+      client: "SaasCorp",
+      duration: "5 months",
+      image: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800",
+      hasSlider: false
+    }
+  ];
+
+  const updateSliderPosition = useCallback((clientX: number) => {
+    if (!sliderRef.current) return;
+    
+    const rect = sliderRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    
+    setSliderPosition(percentage);
+  }, []);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    updateSliderPosition(e.clientX);
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      updateSliderPosition(e.clientX);
+    };
+    
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
+    updateSliderPosition(e.touches[0].clientX);
+    
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      updateSliderPosition(e.touches[0].clientX);
+    };
+    
+    const handleTouchEnd = () => {
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+    
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+  };
+
+  return (
+    <div className="w-full">
+      {selectedProject ? (
+        <div className="space-y-6">
+          <button
+            onClick={() => setSelectedProject(null)}
+            className="flex items-center space-x-1 text-sm hover:bg-black hover:text-white px-2 py-1 border border-black transition-colors duration-150"
+          >
+            <ChevronLeft size={14} />
+            <span>Back to Timeline</span>
+          </button>
+
+          {(() => {
+            const project = projects.find(p => p.id === selectedProject);
+            if (!project) return null;
+
+            return (
+              <div className="space-y-6">
+                <div className="border-b border-black pb-4">
+                  <h3 className="text-xl font-medium mb-2">{project.title}</h3>
+                  <p className="text-sm text-gray-600 mb-4">{project.description}</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                    <div>
+                      <span className="text-gray-500">Year:</span>
+                      <div className="font-medium">{project.year}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Category:</span>
+                      <div className="font-medium">{project.category}</div>
+                    </div>
+                    {project.client && (
+                      <div>
+                        <span className="text-gray-500">Client:</span>
+                        <div className="font-medium">{project.client}</div>
+                      </div>
+                    )}
+                    {project.duration && (
+                      <div>
+                        <span className="text-gray-500">Duration:</span>
+                        <div className="font-medium">{project.duration}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {project.hasSlider ? (
+                  <div className="space-y-2">
+                    <div 
+                      ref={sliderRef}
+                      className="relative w-full h-80 md:h-96 border border-black overflow-hidden cursor-ew-resize select-none"
+                      onMouseDown={handleMouseDown}
+                      onTouchStart={handleTouchStart}
+                    >
+                      {/* Before Image */}
+                      <img
+                        src={project.beforeImage}
+                        alt="Before"
+                        className="absolute inset-0 w-full h-full object-cover"
+                        draggable={false}
+                      />
+                      
+                      {/* After Image with clip-path */}
+                      <div
+                        className="absolute inset-0 w-full h-full overflow-hidden"
+                        style={{
+                          clipPath: `polygon(${sliderPosition}% 0%, 100% 0%, 100% 100%, ${sliderPosition}% 100%)`
+                        }}
+                      >
+                        <img
+                          src={project.afterImage}
+                          alt="After"
+                          className="w-full h-full object-cover"
+                          draggable={false}
+                        />
+                      </div>
+
+                      {/* Slider Line */}
+                      <div
+                        className="absolute top-0 bottom-0 w-0.5 bg-black z-10 pointer-events-none"
+                        style={{ left: `${sliderPosition}%` }}
+                      >
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white border-2 border-black flex items-center justify-center">
+                          <div className="w-2 h-2 bg-black"></div>
+                        </div>
+                      </div>
+
+                      {/* Labels */}
+                      <div className="absolute top-4 left-4 bg-white border border-black px-3 py-1 text-xs font-medium">
+                        BEFORE
+                      </div>
+                      <div className="absolute top-4 right-4 bg-white border border-black px-3 py-1 text-xs font-medium">
+                        AFTER
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-600 text-center">Drag to compare before and after</p>
+                  </div>
+                ) : (
+                  <div className="w-full h-80 md:h-96 border border-black overflow-hidden">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <div className="border-b border-black pb-4">
+            <h2 className="text-xl font-medium mb-2">Portfolio Timeline</h2>
+            <p className="text-sm text-gray-600">Selected projects from 2022-2024</p>
+          </div>
+          
+          {/* Timeline */}
+          <div className="relative">
+            {/* Timeline Line */}
+            <div className="absolute left-4 md:left-8 top-0 bottom-0 w-0.5 bg-black"></div>
+            
+            <div className="space-y-8">
+              {projects.map((project, index) => (
+                <div 
+                  key={project.id} 
+                  className="relative flex items-start space-x-4 md:space-x-8 opacity-0 animate-fade-in"
+                  style={{ 
+                    animationDelay: `${index * 200}ms`,
+                    animationFillMode: 'forwards'
+                  }}
+                >
+                  {/* Timeline Dot */}
+                  <div className="relative z-10 w-8 h-8 bg-white border-2 border-black flex items-center justify-center flex-shrink-0">
+                    <div className="w-2 h-2 bg-black"></div>
+                  </div>
+                  
+                  {/* Project Card */}
+                  <div 
+                    className="flex-1 border border-black bg-white cursor-pointer hover:bg-gray-50 min-h-[120px] md:min-h-[140px] transition-colors duration-150"
+                    onClick={() => setSelectedProject(project.id)}
+                  >
+                    <div className="flex flex-col md:flex-row h-full">
+                      <div className="w-full md:w-48 h-32 md:h-auto border-b md:border-b-0 md:border-r border-black">
+                        <img
+                          src={project.image}
+                          alt={project.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      
+                      <div className="flex-1 p-4 flex flex-col justify-between">
+                        <div>
+                          <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-2">
+                            <h3 className="text-sm md:text-base font-medium">{project.title}</h3>
+                            <span className="text-xs text-gray-600 mt-1 md:mt-0">{project.year}</span>
+                          </div>
+                          <p className="text-xs md:text-sm text-gray-600 mb-3">{project.description}</p>
+                        </div>
+                        
+                        <div className="flex flex-wrap justify-between items-center gap-2">
+                          <span className="text-xs border border-black px-2 py-1">{project.category}</span>
+                          <div className="flex items-center space-x-2 text-xs text-gray-600">
+                            {project.hasSlider && <span>Before/After</span>}
+                            <span>Click to view</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PortfolioWindow;
