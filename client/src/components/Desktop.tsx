@@ -10,7 +10,7 @@ const Desktop: React.FC = () => {
       <div
         className="absolute inset-0 opacity-50"
         style={{
-          backgroundImage: `url(${backgroundImage})`,
+          //backgroundImage: `url(${backgroundImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

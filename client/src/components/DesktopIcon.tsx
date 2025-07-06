@@ -1,5 +1,5 @@
-import React from 'react';
-import { useWindowContext } from '../context/WindowContext';
+import React from "react";
+import { useWindowContext } from "../context/WindowContext";
 
 interface DesktopIconProps {
   emoji: string;
@@ -7,12 +7,16 @@ interface DesktopIconProps {
   windowType: string;
 }
 
-const DesktopIcon: React.FC<DesktopIconProps> = ({ emoji, label, windowType }) => {
+const DesktopIcon: React.FC<DesktopIconProps> = ({
+  emoji,
+  label,
+  windowType,
+}) => {
   const { openWindow } = useWindowContext();
 
   const handleDoubleClick = () => {
-    if (windowType === 'resume') {
-      window.open('https://example.com/resume.pdf', '_blank');
+    if (windowType === "resume") {
+      window.open("https://example.com/resume.pdf", "_blank");
       return;
     }
     openWindow(windowType);
@@ -20,12 +24,10 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({ emoji, label, windowType }) =
 
   return (
     <div
-      className="flex flex-col items-center justify-center w-16 h-20 md:w-20 md:h-24 cursor-pointer p-2 text-black hover:bg-black hover:text-white transition-colors duration-150"
+      className="flex flex-col items-center justify-center w-160 h-20 md:w-20 md:h-24 cursor-pointer p-2 text-black hover:bg-black hover:text-white transition-colors duration-150"
       onDoubleClick={handleDoubleClick}
     >
-      <div className="text-2xl md:text-3xl mb-1">
-        {emoji}
-      </div>
+      <div className="text-2xl md:text-3xl mb-1">{emoji}</div>
       <div className="text-xs text-center leading-tight font-medium">
         {label}
       </div>
